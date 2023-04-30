@@ -54,7 +54,7 @@ function read_files(array &$transactions, array $files): void
     }
 }
 
-function scan_transactions(string $directory): array|bool
+function get_transactions(string $directory): array|bool
 {
     if (!is_dir($directory)) {
         return false;
@@ -74,5 +74,5 @@ function scan_transactions(string $directory): array|bool
 }
 
 echo "<pre>\n";
-var_dump(scan_transactions(FILES_PATH));
+$tr = get_transactions(FILES_PATH);
 echo "</pre>\n";
