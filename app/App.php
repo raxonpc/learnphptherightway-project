@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 // Your Code
-function get_transactions(string $file_path): array|null
+function parse_csv(string $file_path): array|null
 {
     if (!is_file($file_path)) {
         return null;
@@ -23,5 +23,5 @@ function get_transactions(string $file_path): array|null
 }
 
 echo "<pre>\n";
-print_r(get_transactions(FILES_PATH . "sample_1.csv"));
+print_r(parse_csv(FILES_PATH . "sample_1.csv"));
 echo "</pre>\n";
