@@ -56,25 +56,21 @@
             $total_income = 0;
             $total_expense = 0;
             foreach ($transactions as $transaction) {
+                // RENDER
                 echo "<tr>\n";
-
-                $formatted_date = date('M j, Y', strtotime($transaction['Date']));
-                echo "<td>" . $formatted_date . "</td>\n";
+                echo "<td>" . format_date($transaction['Date']) . "</td>\n";
                 echo "<td>" . $transaction['Check #'] . "</td>\n";
                 echo "<td>" . $transaction['Description'] . "</td>\n";
+                $classname = $transaction['Amount'] < 0 ? "negative" : "positive";
+                echo "<td class=\"$classname\">" . format_dollar_amount($transaction['Amount']) . "</td>\n";
+                echo "</tr>\n";
 
+                // COUNT INCOME AND EXPENSE
                 if ($transaction['Amount'] < 0) {
-                    $classname = "negative";
-                    $prefix = "-$";
                     $total_expense += abs($transaction['Amount']);
                 } else {
-                    $classname = "positive";
-                    $prefix = "$";
                     $total_income += $transaction['Amount'];
                 }
-
-                echo "<td class=\"$classname\">" . $prefix . abs($transaction['Amount']) . "</td>\n";
-                echo "</tr>\n";
             }
             ?>
         </tbody>

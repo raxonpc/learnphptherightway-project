@@ -79,15 +79,8 @@ function amount_to_float(string $amount): float|bool
         return false;
     }
 
-    $negative = false;
-    if (str_starts_with($amount, '-')) {
-        $negative = true;
-    }
-    // remove 000,000 separators
-    $amount = str_replace(",", "", $amount);
-
-    $value = $negative ? -floatval(substr($amount, 2)) : floatval(substr($amount, 1));
-    return $value;
+    $value = str_replace(["$", ","], "", $amount);
+    return floatval($value);
 }
 
 // use the first element of the array as keys for the new array
@@ -111,4 +104,20 @@ function translate_array(array|bool $transactions): array|bool
     $output = array_map($func, $output);
 
     return $output;
+}
+
+function format_dollar_amount(float $amount): string
+{
+    if ($amount < 0) {
+        $prefix = "-$";
+    } else {
+        $prefix = "$";
+    }
+
+    return $prefix . abs($amount);
+}
+
+function format_date(string $date): string
+{
+    return date('M j, Y', strtotime($date));
 }
