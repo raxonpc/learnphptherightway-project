@@ -73,6 +73,42 @@ function get_transactions(string $directory): array|bool
     return ($transactions === []) ? false : $transactions;
 }
 
-echo "<pre>\n";
-$tr = get_transactions(FILES_PATH);
-echo "</pre>\n";
+function amount_to_float(string $amount): float|bool
+{
+    if (!str_starts_with($amount, '$') && !str_starts_with($amount, '-')) {
+        return false;
+    }
+
+    $negative = false;
+    if (str_starts_with($amount, '-')) {
+        $negative = true;
+    }
+    // remove 000,000 separators
+    $amount = str_replace(",", "", $amount);
+
+    $value = $negative ? -floatval(substr($amount, 2)) : floatval(substr($amount, 1));
+    return $value;
+}
+
+// use the first element of the array as keys for the new array
+function translate_array(array|bool $transactions): array|bool
+{
+    if ($transactions === false) {
+        return false;
+    }
+
+    $keys = $transactions[0];
+    $output = [];
+    foreach (array_slice($transactions, 1) as $transaction) {
+        array_push($output, array_combine($keys, $transaction));
+    }
+
+    $func = function (array $data): array {
+        $data["Amount"] = amount_to_float($data["Amount"]);
+        return $data;
+    };
+
+    $output = array_map($func, $output);
+
+    return $output;
+}

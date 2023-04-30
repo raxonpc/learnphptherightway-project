@@ -48,38 +48,32 @@
         <tbody>
             <?php
             require APP_PATH . "App.php";
-            $transactions = get_transactions(FILES_PATH);
+            $transactions = translate_array(get_transactions(FILES_PATH));
             if ($transactions === false) {
                 return;
             }
+
             $total_income = 0;
             $total_expense = 0;
-            foreach (array_slice($transactions, 1) as $transaction) {
+            foreach ($transactions as $transaction) {
                 echo "<tr>\n";
 
-                [$date, $check, $description, $amount] = $transaction;
+                $formatted_date = date('M j, Y', strtotime($transaction['Date']));
+                echo "<td>" . $formatted_date . "</td>\n";
+                echo "<td>" . $transaction['Check #'] . "</td>\n";
+                echo "<td>" . $transaction['Description'] . "</td>\n";
 
-                $formatted_date = date('M j, Y', strtotime($date));
-                echo "<td>$formatted_date</td>\n";
-                echo "<td>$check</td>\n";
-                echo "<td>$description</td>\n";
-
-                // check if amount is negative
-                $negative = $amount[0] === "-" ? true : false;
-
-                // sometimes the value has ',' as a separator
-                $amount = str_replace(",", "", $amount);
-                if ($negative === true) {
-                    $value = floatval(substr($amount, 2));
-                    $total_expense += $value;
+                if ($transaction['Amount'] < 0) {
                     $classname = "negative";
+                    $prefix = "-$";
+                    $total_expense += abs($transaction['Amount']);
                 } else {
-                    $value = floatval(substr($amount, 1));
-                    $total_income += $value;
                     $classname = "positive";
+                    $prefix = "$";
+                    $total_income += $transaction['Amount'];
                 }
 
-                echo "<td class=\"$classname\">$amount</td>\n";
+                echo "<td class=\"$classname\">" . $prefix . abs($transaction['Amount']) . "</td>\n";
                 echo "</tr>\n";
             }
             ?>
